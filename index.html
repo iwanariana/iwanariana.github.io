@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>weatherdoll-doohicky</title>
+    <style>
+        /* Establishes the clean, pitch-black retro void */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* Top header bar: Pins GIFs to the far edges and centers the text */
+        .top-header {
+            display: flex;
+            justify-content: space-between; /* Pushes the two GIFs to opposite sides */
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Responsive sizing configuration for your corner GIFs */
+        .corner-gif {
+            width: 120px; /* You can adjust the pixel width size here */
+            height: auto;
+            image-rendering: pixelated;
+            cursor: pointer;
+        }
+
+        /* Central header block positioning */
+        .title-center {
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .title-center h1 {
+            font-size: 28px;
+            margin: 0 0 10px 0;
+            font-weight: normal;
+        }
+
+        .title-center p {
+            font-size: 16px;
+            color: #aaaaaa;
+            margin: 0;
+        }
+
+        /* Links block containment layout */
+        .links-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 40px;
+        }
+
+        /* Bullet point layout styling */
+        .links-list {
+            list-style-type: disc;
+            padding-left: 20px;
+            font-size: 18px;
+            line-height: 2;
+        }
+
+        /* Custom signature light-blue styling directly from your sketch */
+        .links-list a {
+            color: #38b6ff; 
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .links-list a:hover {
+            text-decoration: underline; /* Standard subtle hover effect */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER: TWO CORNER GIFS AND HEADER STRINGS -->
+    <header class="top-header">
+        <!-- Left Side GIF Element -->
+        <img src="left-side.gif" alt="Left GIF" class="corner-gif" id="gif-left">
+
+        <!-- Core Landing Titles -->
+        <div class="title-center">
+            <h1>{name}'s Doohickey stuff</h1>
+            <p>random things I made for no reason</p>
+        </div>
+
+        <!-- Right Side GIF Element -->
+        <img src="right-side.gif" alt="Right GIF" class="corner-gif" id="gif-right">
+    </header>
+
+    <!-- MAIN LINKS COLLECTION BLOCK -->
+    <main class="links-container">
+        <ul class="links-list">
+            <!-- Replace 'secret-room.html' with the actual page you want to open -->
+            <li><a href="secret-room.html" class="sfx-link">hyperlink to subpage</a></li>
+            <li><a href="#" class="sfx-link">more hyperlinks and so on</a></li>
+        </ul>
+    </main>
+
+    <!-- COMPATIBLE AUDIO SYSTEM GRAPH ENGINES -->
+    <audio id="bg-music" src="music4.ogg" loop preload="auto" crossorigin="anonymous"></audio>
+    <audio id="click-sfx" src="snd_board_text_main_end.wav" preload="auto" crossorigin="anonymous"></audio>
+
+    <script>
+        const musicTrack = document.getElementById('bg-music');
+        const clickSound = document.getElementById('click-sfx');
+        
+        let audioCtxInitialized = false;
+
+        // Force-unlocks full audio priority pipeline on desktop and mobile browsers
+        function initAudioPipeline() {
+            if (!audioCtxInitialized) {
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    const audioCtx = new AudioContext();
+                    
+                    const musicSource = audioCtx.createMediaElementSource(musicTrack);
+                    musicSource.connect(audioCtx.destination);
+                    
+                    const sfxSource = audioCtx.createMediaElementSource(clickSound);
+                    sfxSource.connect(audioCtx.destination);
+                    
+                    if (audioCtx.state === 'suspended') {
+                        audioCtx.resume();
+                    }
+                } catch(err) {
+                    console.log("AudioContext pipeline running.");
+                }
+                
+                musicTrack.play().catch(e => console.log("Awaiting link interaction for background audio."));
+                audioCtxInitialized = true;
+            }
+        }
+
+        // SFX Trigger Layer
+        function playSfx() {
+            clickSound.currentTime = 0;
+            clickSound.play().catch(err => console.log(err));
+        }
+
+        // Add event listeners to your side-corner GIFs
+        document.getElementById('gif-left').addEventListener('click', () => {
+            initAudioPipeline();
+            playSfx();
+        });
+        document.getElementById('gif-right').addEventListener('click', () => {
+            initAudioPipeline();
+            playSfx();
+        });
+
+        // Add event listeners to all hyperlinks to play your sound effect before navigating
+        document.querySelectorAll('.sfx-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                initAudioPipeline();
+                playSfx();
+                
+                // Delays navigation slightly if pointing to an actual webpage so the sound has time to play
+                if (link.getAttribute('href') !== '#') {
+                    e.preventDefault();
+                    setTimeout(() => {
+                        window.location.href = link.href;
+                    }, 150); 
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
