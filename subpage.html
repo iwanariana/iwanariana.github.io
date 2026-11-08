@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subpage Doohicky</title>
+    <title>cool guy</title>
     <style>
         /* Creates a perfectly centered pitch-black canvas void */
         html, body {
@@ -18,10 +18,11 @@
             overflow: hidden;
         }
 
-        /* Responsive styling for your dead-center single PNG */
+        /* Smaller sizing configuration for your dead-center single PNG */
         .centered-asset {
-            max-width: 90vw;
-            max-height: 80vh;
+            width: 250px; /* Forces the image to be smaller on all screens */
+            max-width: 50vw; /* Keeps it responsive on smaller mobile layouts */
+            height: auto;
             object-fit: contain;
             cursor: pointer;
             image-rendering: pixelated; /* Keeps crisp pixel art borders if it's a sprite */
