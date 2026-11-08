@@ -26,7 +26,7 @@
 
         /* Responsive sizing configuration for your corner GIFs */
         .corner-gif {
-            width: 120px; /* You can adjust the pixel width size here */
+            width: 100px; /* Perfect size for retro sprite proportions */
             height: auto;
             image-rendering: pixelated;
             cursor: pointer;
@@ -81,8 +81,8 @@
 
     <!-- TOP HEADER: TWO CORNER GIFS AND HEADER STRINGS -->
     <header class="top-header">
-        <!-- Left Side GIF Element -->
-        <img src="left-side.gif" alt="Left GIF" class="corner-gif" id="gif-left">
+        <!-- Left Side GIF Element (Kris) -->
+        <img src="kris.gif" alt="Kris GIF" class="corner-gif" id="gif-left">
 
         <!-- Core Landing Titles -->
         <div class="title-center">
@@ -90,28 +90,33 @@
             <p>random things I made for no reason</p>
         </div>
 
-        <!-- Right Side GIF Element -->
-        <img src="right-side.gif" alt="Right GIF" class="corner-gif" id="gif-right">
+        <!-- Right Side GIF Element (Ralsei) -->
+        <img src="ralsei.gif" alt="Ralsei GIF" class="corner-gif" id="gif-right">
     </header>
 
     <!-- MAIN LINKS COLLECTION BLOCK -->
     <main class="links-container">
         <ul class="links-list">
             <!-- Replace 'secret-room.html' with the actual page you want to open -->
-            <li><a href="secret-room.html" class="sfx-link">hyperlink to subpage</a></li>
-            <li><a href="#" class="sfx-link">more hyperlinks and so on</a></li>
+            <li><a href="secret-room.html">hyperlink to subpage</a></li>
+            <li><a href="#">more hyperlinks and so on</a></li>
         </ul>
     </main>
 
     <!-- COMPATIBLE AUDIO SYSTEM GRAPH ENGINES -->
     <audio id="bg-music" src="music4.ogg" loop preload="auto" crossorigin="anonymous"></audio>
-    <audio id="click-sfx" src="snd_board_text_main_end.wav" preload="auto" crossorigin="anonymous"></audio>
+    <audio id="sfx-left" src="snd_pirouette.wav" preload="auto" crossorigin="anonymous"></audio>
+    <audio id="sfx-right1" src="ralseising1.wav" preload="auto" crossorigin="anonymous"></audio>
+    <audio id="sfx-right2" src="ralseising2.wav" preload="auto" crossorigin="anonymous"></audio>
 
     <script>
         const musicTrack = document.getElementById('bg-music');
-        const clickSound = document.getElementById('click-sfx');
+        const sfxLeft = document.getElementById('sfx-left');
+        const sfxRight1 = document.getElementById('sfx-right1');
+        const sfxRight2 = document.getElementById('sfx-right2');
         
         let audioCtxInitialized = false;
+        let rightClickCount = 0; // Tracks clicks to cycle between ralseising1 and ralseising2
 
         // Force-unlocks full audio priority pipeline on desktop and mobile browsers
         function initAudioPipeline() {
@@ -120,11 +125,18 @@
                     const AudioContext = window.AudioContext || window.webkitAudioContext;
                     const audioCtx = new AudioContext();
                     
+                    // Route music and all SFX through the exact same system context graph
                     const musicSource = audioCtx.createMediaElementSource(musicTrack);
                     musicSource.connect(audioCtx.destination);
                     
-                    const sfxSource = audioCtx.createMediaElementSource(clickSound);
-                    sfxSource.connect(audioCtx.destination);
+                    const leftSource = audioCtx.createMediaElementSource(sfxLeft);
+                    leftSource.connect(audioCtx.destination);
+                    
+                    const right1Source = audioCtx.createMediaElementSource(sfxRight1);
+                    right1Source.connect(audioCtx.destination);
+                    
+                    const right2Source = audioCtx.createMediaElementSource(sfxRight2);
+                    right2Source.connect(audioCtx.destination);
                     
                     if (audioCtx.state === 'suspended') {
                         audioCtx.resume();
@@ -138,36 +150,26 @@
             }
         }
 
-        // SFX Trigger Layer
-        function playSfx() {
-            clickSound.currentTime = 0;
-            clickSound.play().catch(err => console.log(err));
-        }
-
-        // Add event listeners to your side-corner GIFs
+        // Left GIF Interaction Handler (Kris)
         document.getElementById('gif-left').addEventListener('click', () => {
             initAudioPipeline();
-            playSfx();
-        });
-        document.getElementById('gif-right').addEventListener('click', () => {
-            initAudioPipeline();
-            playSfx();
+            sfxLeft.currentTime = 0;
+            sfxLeft.play().catch(err => console.log(err));
         });
 
-        // Add event listeners to all hyperlinks to play your sound effect before navigating
-        document.querySelectorAll('.sfx-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                initAudioPipeline();
-                playSfx();
-                
-                // Delays navigation slightly if pointing to an actual webpage so the sound has time to play
-                if (link.getAttribute('href') !== '#') {
-                    e.preventDefault();
-                    setTimeout(() => {
-                        window.location.href = link.href;
-                    }, 150); 
-                }
-            });
+        // Right GIF Interaction Handler (Ralsei) - Cycles through ralseising1 and ralseising2 in order
+        document.getElementById('gif-right').addEventListener('click', () => {
+            initAudioPipeline();
+            
+            if (rightClickCount % 2 === 0) {
+                sfxRight1.currentTime = 0;
+                sfxRight1.play().catch(err => console.log(err));
+            } else {
+                sfxRight2.currentTime = 0;
+                sfxRight2.play().catch(err => console.log(err));
+            }
+            
+            rightClickCount++; // Advance count to toggle sound on next click
         });
     </script>
 
